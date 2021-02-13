@@ -1,9 +1,12 @@
 var Category = require('../models/category');
+var Laptop = require('../models/laptop');
+var async = require('async');
 
 // Display list of all categories.
 exports.category_list = function(req, res, next) {
 
     Category.find()
+    .sort('ascending')
     .exec(function(err, list_categories) {
         if (err) { return next(err) }
         res.render('category_list', { title: 'Category List', category_list: list_categories });
@@ -12,8 +15,27 @@ exports.category_list = function(req, res, next) {
 };
 
 // Display detail page for a specific category.
-exports.category_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: category detail: ' + req.params.id);
+exports.category_detail = function(req, res, next) {
+    
+    async.parallel({
+        category: function(callback) {
+            Category.findById(req.params.id)
+            .exec(callback)
+        },
+        category_laptops: function(callback) {
+            Laptop.find({ 'category': req.params.id })
+            .populate('manufacturer')
+            .exec(callback);
+        }
+    }, function(err, results) {
+        if (err) { return next(err); }
+        if (results.category == null) {
+            var err = new Error('Category not found');
+            err.status = 404;
+            return next(err);
+        }
+        res.render('category_detail', { title: 'Category Detail', category: results.category, category_laptops: results.category_laptops });
+    })
 };
 
 // Display category create form on GET.

@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+  h1 Category: #{category.name}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Laptops
+
+    dl
+      each laptop in category_laptops
+        dt
+          a(href=laptop.url) #{laptop.manufacturer.name} #{laptop.name}
+
+      else
+        p This category has no laptops
