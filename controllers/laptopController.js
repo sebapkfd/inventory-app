@@ -1,7 +1,24 @@
 var Laptop = require('../models/laptop');
+var Manufacturer = require('../models/manufacturer');
+var Category = require('../models/category');
+
+var async = require('async');
 
 exports.index = function(req, res) {
-    res.send('NOT IMPLEMENTED: Site Home Page');
+    
+    async.parallel({
+        laptop_count: function(callback) {
+            Laptop.countDocuments({}, callback);
+        },
+        manufacturer_count: function(callback) {
+            Manufacturer.countDocuments({}, callback);
+        },
+        category_count: function(callback) {
+            Category.countDocuments({}, callback);
+        }
+    }, function(err, results) {
+        res.render('index', { title: 'Inventory Home', error: err, data: results});
+    })
 };
 
 // Display list of all laptops.

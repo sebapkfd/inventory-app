@@ -1,11 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-// Require controller modules.
-// var laptop_controller = require('../controllers/laptopController');
-var manufacturer_controller = require('../controllers/manufacturerController');
-var category_controller = require('../controllers/categoryController');
-
 var laptop_controller = require('../controllers/laptopController');
 var category_controller = require('../controllers/categoryController');
 var manufacturer_controller = require('../controllers/manufacturerController');
@@ -89,7 +84,7 @@ router.post('/category/:id/update', category_controller.category_update_post);
 router.get('/category/:id', category_controller.category_detail);
 
 // GET request for list of all category.
-router.get('/categorys', category_controller.category_list);
+router.get('/categories', category_controller.category_list);
 
 
 module.exports = router;
