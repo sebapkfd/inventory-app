@@ -22,8 +22,14 @@ exports.index = function(req, res) {
 };
 
 // Display list of all laptops.
-exports.laptop_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop list');
+exports.laptop_list = function(req, res, next) {
+    Laptop.find({}, 'name manufacturer')
+    .populate('manufacturer')
+    .exec(function (err, list_laptops) {
+        if (err) { 
+            return next(err); }
+        res.render('laptop_list', { title: 'Laptop List', laptop_list: list_laptops });
+    })
 };
 
 // Display detail page for a specific laptop.

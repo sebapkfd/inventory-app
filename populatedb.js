@@ -57,25 +57,49 @@ function manufacturerCreate(name, description, cb) {
     });
 }
 
+// function laptopCreate(name, manufacturer, category, desc, price, stock, cb) {
+//     laptopdetail = {
+//         name: name,
+//         manufacturers: manufacturer,
+//         categories: category,
+//         desc: desc,
+//         price: price,
+//         stock: stock
+//     }
+//     var laptop = new Laptop(laptopdetail);
+//     laptop.save(function(err) {
+//         if (err) {
+//             cb(err, null)
+//             return
+//         }
+//         console.log('New Laptop' + laptop);
+//         laptops.push(laptop)
+//         cb(null, laptop)
+//     });
+// }
+
 function laptopCreate(name, manufacturer, category, desc, price, stock, cb) {
+    
     laptopdetail = {
         name: name,
-        manufacturers: manufacturer,
-        categories: category,
+        manufacturer: manufacturer,
+        category: category,
         desc: desc,
         price: price,
         stock: stock
     }
-    var laptop = new Laptop(laptopdetail);
-    laptop.save(function(err) {
-        if (err) {
-            cb(err, null)
-            return
-        }
-        console.log('New Laptop' + laptop);
-        laptops.push(laptop)
-        cb(null, laptop)
-    })
+    // if (category != false) laptopdetail.category = category
+      
+    var laptop = new Laptop(laptopdetail);    
+    laptop.save(function (err) {
+      if (err) {
+        cb(err, null)
+        return
+      }
+      console.log('New laptop: ' + laptop);
+      laptops.push(laptop)
+      cb(null, laptop)
+    }  );
 }
 
 
@@ -90,7 +114,7 @@ function createCategory(cb) {
 
 
 function createManufacturers(cb) {
-    async.parallel([
+    async.series([
         function(callback) {
             manufacturerCreate('Asus', 'TBA', callback);
         },
@@ -105,30 +129,29 @@ function createManufacturers(cb) {
 function createLaptops(cb) {
     async.parallel([
         function(callback) {
-            laptopCreate('Aspire', 'Acer', 'Laptops', 'TBA', 668, 50, callback);
+            laptopCreate('Aspire', manufacturers[1], categories[0], 'TBA', 668, 50, callback);
         },
         function(callback) {
-            laptopCreate('TUF', 'Asus', 'Laptops', 'TBA', 867, 15, callback);
+            laptopCreate('TUF', manufacturers[0], categories[0], 'TBA', 867, 15, callback);
         },
         function(callback) {
-            laptopCreate('ROG', 'Asus', 'Laptops', 'TBA', 1499, 10, callback);
+            laptopCreate('ROG', manufacturers[0], categories[0], 'TBA', 1499, 10, callback);
         },
         function(callback) {
-            laptopCreate('Predator', 'Acer', 'Laptops', 'TBA', 1629, 10, callback);
+            laptopCreate('Predator', manufacturers[1], categories[0], 'TBA', 1629, 10, callback);
         },
         function(callback) {
-            laptopCreate('Nitro', 'Acer', 'Laptops', 'TBA', 999, 16, callback);
+            laptopCreate('Nitro', manufacturers[1], categories[0], 'TBA', 999, 16, callback);
         },
         function(callback) {
-            laptopCreate('Vivobook', 'Asus', 'Laptops', 'TBA', 639, 11, callback);
+            laptopCreate('Vivolaptop', manufacturers[0], categories[0], 'TBA', 639, 11, callback);
         },
         function(callback) {
-            laptopCreate('Zenbook', 'Asus', 'Laptops', 'TBA', 1990, 13, callback);
+            laptopCreate('Zenlaptop', manufacturers[0], categories[0], 'TBA', 1990, 13, callback);
         }
     ],
     cb);
 }
-
 
 async.series(
     [createCategory, createManufacturers, createLaptops],

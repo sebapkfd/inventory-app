@@ -4,8 +4,8 @@ var Schema = mongoose.Schema;
 var LaptopSchema = new Schema(
   {
     name: {type: String, required: true},
-    manufacturer: {type: Schema.Types.ObjectId, ref: 'Manufacturer', required: false},
-    category: {type: Schema.Types.ObjectId, ref: 'Category', required: false},
+    manufacturer: {type: Schema.Types.ObjectId, ref: 'Manufacturer', required: true},
+    category: {type: Schema.Types.ObjectId, ref: 'Category', required: true},
     desc: {type: String, required: true},
     price: {type: Number, required: true, min: 0, max: 99999},
     stock: {type: Number, required: true, min: 0, max: 99999}
@@ -16,7 +16,7 @@ var LaptopSchema = new Schema(
 LaptopSchema
 .virtual('url')
 .get(function () {
-  return '/catalog/laptop/' + this._id;
+  return '/inventory/laptop/' + this._id;
 });
 
 //Export model
