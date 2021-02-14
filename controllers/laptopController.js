@@ -1,11 +1,10 @@
 var Laptop = require('../models/laptop');
 var Manufacturer = require('../models/manufacturer');
 var Category = require('../models/category');
-
 var async = require('async');
+const { body, validationResult } = require('express-validator');
 
 exports.index = function(req, res) {
-    
     async.parallel({
         laptop_count: function(callback) {
             Laptop.countDocuments({}, callback);
@@ -44,14 +43,65 @@ exports.laptop_detail = function(req, res, next) {
 };
 
 // Display laptop create form on GET.
-exports.laptop_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop create GET');
+exports.laptop_create_get = function(req, res, next) { 
+    async.parallel({
+        manufacturers: function(callback) {
+            Manufacturer.find(callback);
+        },
+        categories: function(callback) {
+            Category.find(callback);
+        }
+    }, function(err, results) {
+        if (err) { return next(err) }
+        res.render('laptop_form', { title: ' Create Laptop', manufacturers: results.manufacturers, categories: results.categories });
+    });
 };
 
 // Handle laptop create on POST.
-exports.laptop_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop create POST');
-};
+exports.laptop_create_post = [
+    body('name', 'Name must not be empty').trim().isLength({ min:1 }).escape(),
+    body('manufacturer', 'Manufacturer must not be empty').trim().isLength({ min:1 }).escape(),
+    body('category', 'Category must not be empty').trim().isLength({ min:1 }).escape(),
+    body('desc', 'Decription must not be empty').trim().isLength({ min:1 }).escape(),
+    body('price', 'Price has to be between $0 and $99999').trim().isFloat({ min : 0, max: 99999 }).escape(),
+    body('stock', 'Stock has to be between 0 and 99999').trim().isInt({ min : 0, max: 99999 }).escape(),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        var laptop = new Laptop(
+            {
+                name: req.body.name,
+                manufacturer: req.body.manufacturer,
+                desc: req.body.desc,
+                category: req.body.category,
+                price: req.body.price,
+                stock: req.body.stock
+            }
+        );
+        if (!errors.isEmpty()) {
+            async.parallel({
+                manufacturers: function(callback) {
+                    Manufacturer.find(callback);
+                },
+                categories: function(callback) {
+                    Category.find(callback);
+                }
+            }, function(err, results) {
+                if (err) { return next(err) }
+                res.render('laptop_form', { title: 'Create Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: laptop, errors: errors.array() });
+            })
+            return;
+        }
+        else {
+            laptop.save(function (err) {
+                if (err) { return next(err) }
+                res.redirect(laptop.url);
+            })
+        }
+    }
+
+]
 
 // Display laptop delete form on GET.
 exports.laptop_delete_get = function(req, res) {
