@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1 Manufacturer: #{manufacturer.name}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Laptops
+
+    dl
+      each laptop in manufacturer_laptops
+        dt
+          a(href=laptop.url) #{laptop.name}
+        dd #{laptop.desc}
+
+      else
+        p This manufacturer has no laptops.

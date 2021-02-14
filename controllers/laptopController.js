@@ -39,7 +39,7 @@ exports.laptop_detail = function(req, res, next) {
     .populate('category')
     .exec(function(err, result) {
         if (err) { return next(err); }
-        res.render('laptop_detail', { title: result.name, laptop: result });
+        res.render('laptop_detail', { title: `${result.manufacturer.name} ${result.name}`, laptop: result });
     })  
 };
 
