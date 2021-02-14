@@ -1,6 +1,7 @@
 var Manufacturer = require('../models/manufacturer');
 var Laptop = require('../models/laptop');
 var async = require('async');
+const { body, validationResult} = require('express-validator');
 
 // Display list of all manufacturers.
 exports.manufacturer_list = function(req, res, next) {
@@ -38,14 +39,35 @@ exports.manufacturer_detail = function(req, res, next) {
 };
 
 // Display manufacturer create form on GET.
-exports.manufacturer_create_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: manufacturer create GET');
+exports.manufacturer_create_get = function(req, res, next) {
+    res.render('manufacturer_form', { title: ' Create Manufacturer' });
 };
 
 // Handle manufacturer create on POST.
-exports.manufacturer_create_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: manufacturer create POST');
-};
+exports.manufacturer_create_post = [
+    body('name', 'Manufacturer name required').trim().isLength({ min: 1}).escape(),
+    body('description', 'Description required').trim().isLength({ min: 1}).escape(),
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            res.render('manufacturer_form', { title: ' Create Manufacturer', manufacturer: req.body, errors: errors.array( )});
+            return;
+        }
+        else {
+            var manufacturer = new Manufacturer(
+                {
+                    name: req.body.name,
+                    description: req.body.description
+                }
+            );
+            manufacturer.save(function(err) {
+                if (err) { return next(err) }
+                res.redirect(manufacturer.url);
+            })
+        }
+    }
+];
 
 // Display manufacturer delete form on GET.
 exports.manufacturer_delete_get = function(req, res) {
