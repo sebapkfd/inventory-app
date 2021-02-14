@@ -33,8 +33,14 @@ exports.laptop_list = function(req, res, next) {
 };
 
 // Display detail page for a specific laptop.
-exports.laptop_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop detail: ' + req.params.id);
+exports.laptop_detail = function(req, res, next) {
+    Laptop.findById(req.params.id)
+    .populate('manufacturer')
+    .populate('category')
+    .exec(function(err, result) {
+        if (err) { return next(err); }
+        res.render('laptop_detail', { title: result.name, laptop: result });
+    })  
 };
 
 // Display laptop create form on GET.
