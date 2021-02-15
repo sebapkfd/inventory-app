@@ -20,10 +20,10 @@ block content
       textarea#desc.form-control(type='textarea', placeholder='Add description' name='desc' required='true') #{undefined === laptop ? '' : laptop.desc}
     div.form-group
       label(for='price') Price:
-      input#desc.form-control(type='number', name='price' required='true' min='0' value=(undefined === laptop ? '' : laptop.price) ) 
+      input#price.form-control(type='number', name='price' required='true' min='0' value=(undefined === laptop ? '' : laptop.price) ) 
     div.form-group
       label(for='stock') Stock:
-      input#desc.form-control(type='number', name='stock' required='true' min='0' step='1' value=(undefined === laptop ? '' : laptop.stock) )
+      input#stock.form-control(type='number', name='stock' required='true' min='0' step='1' value=(undefined === laptop ? '' : laptop.stock) )
     div.form-group
       label(for='category') Category:
       select#category.form-control(type='select', placeholder='Select category' name='category' required='true' )

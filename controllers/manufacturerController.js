@@ -85,7 +85,7 @@ exports.manufacturer_delete_get = function(req, res, next) {
         if (results.manufacturer == null) {
             res.redirect('/inventory/manufacturers');
         }
-        res.render('manufacturer_delete', { title: 'Delete Manufacturer', manufacturer: results.manufacturer, manufacturer_laptops : results.manufacturers_laptops });
+        res.render('manufacturer_delete', { title: 'Manufacturer Delete', manufacturer: results.manufacturer, manufacturer_laptops: results.manufacturers_laptops });
     });
 };
 
