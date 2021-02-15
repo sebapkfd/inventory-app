@@ -6,7 +6,7 @@ block content
   form(method='POST' action='')
     div.form-group
       label(for='name') Name:
-      input#first_name.form-control(type='text' placeholder='Name' name='name' required='true' value=(undefined === manufacturer ? '' : manufacturer.first_name) )
+      input#first_name.form-control(type='text' placeholder='Name' name='name' required='true' value=(undefined === manufacturer ? '' : manufacturer.name) )
       label(for='description') Description:
       input#name.form-control(type='textarea', placeholder='Description' name='description' value=(undefined === manufacturer ? '' : manufacturer.description))
     button.btn.btn-primary(type='submit') Submit

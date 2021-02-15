@@ -116,11 +116,40 @@ exports.manufacturer_delete_post = function(req, res, next) {
 };
 
 // Display manufacturer update form on GET.
-exports.manufacturer_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: manufacturer update GET');
+exports.manufacturer_update_get = function(req, res, next) {
+    Manufacturer.findById(req.params.id)
+    .exec(function(err, result) {
+        if (err) { return next(err) }
+        res.render('manufacturer_form', { title: 'Update Manufacturer', manufacturer: result });
+    })
+    
 };
 
 // Handle manufacturer update on POST.
-exports.manufacturer_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: manufacturer update POST');
-};
+exports.manufacturer_update_post = [
+    body('name', 'Manufacturer name required').trim().isLength({ min: 1}).escape(),
+    body('description', 'Description required').trim().isLength({ min: 1}).escape(),
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            res.render('manufacturer_form', { title: ' Create Manufacturer', manufacturer: req.body, errors: errors.array( )});
+            return;
+        }
+        else {
+            var manufacturer = new Manufacturer(
+                {
+                    name: req.body.name,
+                    description: req.body.description,
+                    _id: req.params.id
+                }
+            );
+            Manufacturer.findByIdAndUpdate(req.params.id, manufacturer, {}, function(err, themanufacturer) {
+                if (err) { return next(err) }
+                res.redirect(themanufacturer.url)
+            })
+        }
+    }
+
+
+]

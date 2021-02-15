@@ -118,7 +118,7 @@ exports.laptop_delete_post = function(req, res, next) {
     Laptop.findById(req.params.id)
     .populate('manufacturer')
     .populate('category')
-    .exec(function(err, result) {
+    .exec(function(err) {
         if (err) { return next(err) }
         else {
             Laptop.findByIdAndRemove(req.body.laptopid, function deleteLaptop(err) {
@@ -175,7 +175,7 @@ exports.laptop_update_post = [
                 category: req.body.category,
                 price: req.body.price,
                 stock: req.body.stock,
-                _id:req.params.id
+                _id: req.params.id
             }
         );
         if (!errors.isEmpty()) {
