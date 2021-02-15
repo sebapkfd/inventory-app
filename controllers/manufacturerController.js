@@ -133,7 +133,7 @@ exports.manufacturer_update_post = [
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
-            res.render('manufacturer_form', { title: ' Create Manufacturer', manufacturer: req.body, errors: errors.array( )});
+            res.render('manufacturer_form', { title: ' Update Manufacturer', manufacturer: req.body, errors: errors.array( )});
             return;
         }
         else {

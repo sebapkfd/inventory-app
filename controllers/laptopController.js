@@ -188,7 +188,7 @@ exports.laptop_update_post = [
                 }
             }, function(err, results) {
                 if (err) { return next(err) }
-                res.render('laptop_form', { title: 'Create Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: laptop, errors: errors.array() });
+                res.render('laptop_form', { title: 'Update Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: laptop, errors: errors.array() });
             })
             return;
         }
