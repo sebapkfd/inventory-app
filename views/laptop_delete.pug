@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  h1 #{title}: #{laptop.title}
+
+  p #[strong Manufacturer: ]
+    a(href=laptop.manufacturer.url) #{laptop.manufacturer.name}
+  p #[strong Description: ] #{laptop.desc}
+  p #[strong Price: ] #{laptop.price}
+  p #[strong Stock: ] #{laptop.stock}
+  p #[strong Category: ]
+    a(href=laptop.category.url) #{laptop.category.name}
+
+  p Do you really want to delete this laptop?
+
+  form(method='POST' action='')
+      div.form-group
+      input#laptopid.form-control(type='hidden',name='laptopid', required='true', value=laptop._id )
+
+      button.btn.btn-primary(type='submit') Delete

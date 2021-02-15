@@ -104,13 +104,29 @@ exports.laptop_create_post = [
 ]
 
 // Display laptop delete form on GET.
-exports.laptop_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop delete GET');
+exports.laptop_delete_get = function(req, res, next) {
+    Laptop.findById(req.params.id)
+    .populate('manufacturer')
+    .exec(function(err, result) {
+        if (err) { return next(err) }
+        res.render('laptop_delete', {title: 'Delete Laptop', laptop: result});
+    })
 };
 
 // Handle laptop delete on POST.
-exports.laptop_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop delete POST');
+exports.laptop_delete_post = function(req, res, next) {
+    Laptop.findById(req.params.id)
+    .populate('manufacturer')
+    .populate('category')
+    .exec(function(err, result) {
+        if (err) { return next(err) }
+        else {
+            Laptop.findByIdAndRemove(req.body.laptopid, function deleteLaptop(err) {
+                if (err) { return next(err) }
+                res.redirect('/inventory/laptops')
+            })
+        }
+    })
 };
 
 // Display laptop update form on GET.
