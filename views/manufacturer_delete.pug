@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1 #{title}: #{manufacturer.name}
+
+  if manufacturer_laptops.length
+
+    p #[strong Delete the following laptops before attempting to delete this Manufacturer.]
+
+    div(style='margin-left:20px;margin-top:20px')
+
+      h4 Laptops
+
+      dl
+      each laptop in manufacturer_laptops
+        dt
+          a(href=laptop.url) #{laptop.manufacturer.name} #{laptop.name}
+
+  else
+    p Do you really want to delete this manufacturer?
+
+    form(method='POST' action='')
+      div.form-group
+        input#manufacturerid.form-control(type='hidden',name='manufacturerid', required='true', value=manufacturer._id )
+
+      button.btn.btn-primary(type='submit') Delete

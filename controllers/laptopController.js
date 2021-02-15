@@ -114,11 +114,74 @@ exports.laptop_delete_post = function(req, res) {
 };
 
 // Display laptop update form on GET.
-exports.laptop_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop update GET');
+exports.laptop_update_get = function(req, res, next) {
+    async.parallel({
+        laptop: function(callback) {
+            Laptop.findById(req.params.id)
+            .populate('manufacturer')
+            .populate('category')
+            .exec(callback);
+        },
+        manufacturers: function(callback) {
+            Manufacturer.find(callback);
+        },
+        categories : function(callback) {
+            Category.find(callback);
+        }
+    }, function(err, results) {
+        if (err) { return next(err) }
+        if (results.laptop == null) {
+            var err = new Error('Laptop not found');
+            err.status = 404;
+            return next(err);
+        }
+        res.render('laptop_form', { title: 'Update Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: results.laptop });
+    });
 };
 
 // Handle laptop update on POST.
-exports.laptop_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: laptop update POST');
-};
+exports.laptop_update_post = [
+    body('name', 'Name must not be empty').trim().isLength({ min:1 }).escape(),
+    body('manufacturer', 'Manufacturer must not be empty').trim().isLength({ min:1 }).escape(),
+    body('category', 'Category must not be empty').trim().isLength({ min:1 }).escape(),
+    body('desc', 'Decription must not be empty').trim().isLength({ min:1 }).escape(),
+    body('price', 'Price has to be between $0 and $99999').trim().isFloat({ min : 0, max: 99999 }).escape(),
+    body('stock', 'Stock has to be between 0 and 99999').trim().isInt({ min : 0, max: 99999 }).escape(),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        var laptop = new Laptop(
+            {
+                name: req.body.name,
+                manufacturer: req.body.manufacturer,
+                desc: req.body.desc,
+                category: req.body.category,
+                price: req.body.price,
+                stock: req.body.stock,
+                _id:req.params.id
+            }
+        );
+        if (!errors.isEmpty()) {
+            async.parallel({
+                manufacturers: function(callback) {
+                    Manufacturer.find(callback);
+                },
+                categories: function(callback) {
+                    Category.find(callback);
+                }
+            }, function(err, results) {
+                if (err) { return next(err) }
+                res.render('laptop_form', { title: 'Create Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: laptop, errors: errors.array() });
+            })
+            return;
+        }
+        else {
+            Laptop.findByIdAndUpdate(req.params.id, laptop, {}, function(err, thelaptop) {
+                if (err) { return next(err) }
+                res.redirect(thelaptop.url)
+            })
+        }
+    }
+
+]

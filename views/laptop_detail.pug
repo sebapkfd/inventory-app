@@ -10,3 +10,9 @@ block content
   p #[strong Stock: ] #{laptop.stock}
   p #[strong Category: ]
     a(href=laptop.category.url) #{laptop.category.name}
+  
+  hr
+  p
+    a(href=laptop.url+'/delete') Delete Laptop 
+  p 
+    a(href=laptop.url+'/update') Update Laptop

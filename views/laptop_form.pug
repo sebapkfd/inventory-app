@@ -12,7 +12,14 @@ block content
       select#manufacturer.form-control(type='select', placeholder='Select manufacturer' name='manufacturer' required='true' )
         for manufacturer in manufacturers
           if laptop
-            option(value=manufacturer._id selected=(manufacturer._id.toString()===laptop.manufacturer._id.toString() ? 'selected' : false) ) #{manufacturer.name}
+            option(value=manufacturer._id selected=(manufacturer._id.toString()===laptop.manufacturer._id || manufacturer._id.toString() == laptop.manufacturer) ? 'selected' : false) #{manufacturer.name}
+            //- option(
+            //-   value=author._id
+            //-   selected=(
+            //-     author._id.toString()==book.author._id
+            //-     || author._id.toString()==book.author
+            //-   ) ? 'selected' : false
+            //- ) #{author.name}
           else
             option(value=manufacturer._id) #{manufacturer.name}
     div.form-group

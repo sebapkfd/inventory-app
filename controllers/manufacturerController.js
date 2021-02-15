@@ -70,13 +70,49 @@ exports.manufacturer_create_post = [
 ];
 
 // Display manufacturer delete form on GET.
-exports.manufacturer_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: manufacturer delete GET');
+exports.manufacturer_delete_get = function(req, res, next) {
+    async.parallel({
+        manufacturer: function(callback) {
+            Manufacturer.findById(req.params.id).exec(callback);
+        },
+        manufacturers_laptops: function(callback) {
+            Laptop.find({ 'manufacturer' : req.params.id})
+            .populate('manufacturer')
+            .exec(callback);
+        }
+    }, function(err, results) {
+        if (err) { return next(err) }
+        if (results.manufacturer == null) {
+            res.redirect('/inventory/manufacturers');
+        }
+        res.render('manufacturer_delete', { title: 'Delete Manufacturer', manufacturer: results.manufacturer, manufacturer_laptops : results.manufacturers_laptops });
+    });
 };
 
 // Handle manufacturer delete on POST.
-exports.manufacturer_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: manufacturer delete POST');
+exports.manufacturer_delete_post = function(req, res, next) {
+    async.parallel({ 
+        manufacturer: function(callback) {
+            Manufacturer.findById(req.body.manufacturerid).exec(callback)
+        },
+        manufacturers_laptops: function(callback) {
+            Laptop.find({ 'manufacturer' : req.body.manufacturerid})
+            .populate('manufacturer')
+            .exec(callback)
+        }
+    }, function(err, results) { 
+        if (err) { return next(err) }
+        if (results.manufacturers_laptops.length > 0) {
+            res.render('manufacturer_delete', { title: 'Manufacturer Delete', manufacturer: results.manufacturer, manufacturer_laptops: results.manufacturers_laptops });
+            return;
+        }
+        else {
+            Manufacturer.findByIdAndRemove(req.body.manufacturerid, function deleteManufacturer(err) {
+                if (err) { return next(err) }
+                res.redirect('/inventory/manufacturers')
+            })
+        }
+    });
 };
 
 // Display manufacturer update form on GET.
