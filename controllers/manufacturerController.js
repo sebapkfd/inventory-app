@@ -1,5 +1,5 @@
 var Manufacturer = require('../models/manufacturer');
-var Laptop = require('../models/laptop');
+var Item = require('../models/item');
 var async = require('async');
 const { body, validationResult} = require('express-validator');
 
@@ -22,8 +22,8 @@ exports.manufacturer_detail = function(req, res, next) {
             Manufacturer.findById(req.params.id)
             .exec(callback)
         },
-        manufacturer_laptops: function(callback) {
-            Laptop.find({ 'manufacturer': req.params.id})
+        manufacturer_items: function(callback) {
+            Item.find({ 'manufacturer': req.params.id})
             .populate('manufacturer')
             .exec(callback);
         }
@@ -34,7 +34,7 @@ exports.manufacturer_detail = function(req, res, next) {
             err.status = 404;
             return next(err);
         }
-        res.render('manufacturer_detail', { title: 'Manufacturer Detail', manufacturer: results.manufacturer, manufacturer_laptops: results.manufacturer_laptops });
+        res.render('manufacturer_detail', { title: 'Manufacturer Detail', manufacturer: results.manufacturer, manufacturer_items: results.manufacturer_items });
     })
 };
 
@@ -75,8 +75,8 @@ exports.manufacturer_delete_get = function(req, res, next) {
         manufacturer: function(callback) {
             Manufacturer.findById(req.params.id).exec(callback);
         },
-        manufacturers_laptops: function(callback) {
-            Laptop.find({ 'manufacturer' : req.params.id})
+        manufacturers_items: function(callback) {
+            Item.find({ 'manufacturer' : req.params.id})
             .populate('manufacturer')
             .exec(callback);
         }
@@ -85,7 +85,7 @@ exports.manufacturer_delete_get = function(req, res, next) {
         if (results.manufacturer == null) {
             res.redirect('/inventory/manufacturers');
         }
-        res.render('manufacturer_delete', { title: 'Manufacturer Delete', manufacturer: results.manufacturer, manufacturer_laptops: results.manufacturers_laptops });
+        res.render('manufacturer_delete', { title: 'Delete Manufacturer', manufacturer: results.manufacturer, manufacturer_items: results.manufacturers_items });
     });
 };
 
@@ -95,15 +95,15 @@ exports.manufacturer_delete_post = function(req, res, next) {
         manufacturer: function(callback) {
             Manufacturer.findById(req.body.manufacturerid).exec(callback)
         },
-        manufacturers_laptops: function(callback) {
-            Laptop.find({ 'manufacturer' : req.body.manufacturerid})
+        manufacturers_items: function(callback) {
+            Item.find({ 'manufacturer' : req.body.manufacturerid})
             .populate('manufacturer')
             .exec(callback)
         }
     }, function(err, results) { 
         if (err) { return next(err) }
-        if (results.manufacturers_laptops.length > 0) {
-            res.render('manufacturer_delete', { title: 'Manufacturer Delete', manufacturer: results.manufacturer, manufacturer_laptops: results.manufacturers_laptops });
+        if (results.manufacturers_items.length > 0) {
+            res.render('manufacturer_delete', { title: 'Delete Manufacturer', manufacturer: results.manufacturer, manufacturer_items: results.manufacturers_items });
             return;
         }
         else {
@@ -144,9 +144,9 @@ exports.manufacturer_update_post = [
                     _id: req.params.id
                 }
             );
-            Manufacturer.findByIdAndUpdate(req.params.id, manufacturer, {}, function(err, themanufacturer) {
+            Manufacturer.findByIdAndUpdate(req.params.id, manufacturer, {}, function(err, updatedManufacturer) {
                 if (err) { return next(err) }
-                res.redirect(themanufacturer.url)
+                res.redirect(updatedManufacturer.url)
             })
         }
     }

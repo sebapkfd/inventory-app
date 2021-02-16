@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var LaptopSchema = new Schema(
+var ItemSchema = new Schema(
   {
     name: {type: String, required: true},
     manufacturer: {type: Schema.Types.ObjectId, ref: 'Manufacturer', required: true},
@@ -13,11 +13,11 @@ var LaptopSchema = new Schema(
 );
 
 // Virtual for book's URL
-LaptopSchema
+ItemSchema
 .virtual('url')
 .get(function () {
-  return '/inventory/laptop/' + this._id;
+  return '/inventory/item/' + this._id;
 });
 
 //Export model
-module.exports = mongoose.model('Laptop', LaptopSchema);
+module.exports = mongoose.model('Item', ItemSchema);

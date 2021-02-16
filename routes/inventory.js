@@ -1,38 +1,38 @@
 var express = require('express');
 var router = express.Router();
 
-var laptop_controller = require('../controllers/laptopController');
+var item_controller = require('../controllers/itemController');
 var category_controller = require('../controllers/categoryController');
 var manufacturer_controller = require('../controllers/manufacturerController');
 
-/// laptop ROUTES ///
+/// item ROUTES ///
 
-// GET catalog home page.
-router.get('/', laptop_controller.index);
+// GET catalog home page. item
+router.get('/', item_controller.index);
 
-// GET request for creating a laptop. NOTE This must come before routes that display laptop (uses id).
-router.get('/laptop/create', laptop_controller.laptop_create_get);
+// GET request for creating a item. NOTE This must come before routes that display item (uses id).
+router.get('/item/create', item_controller.item_create_get);
 
-// POST request for creating laptop.
-router.post('/laptop/create', laptop_controller.laptop_create_post);
+// POST request for creating item.
+router.post('/item/create', item_controller.item_create_post);
 
-// GET request to delete laptop.
-router.get('/laptop/:id/delete', laptop_controller.laptop_delete_get);
+// GET request to delete item.
+router.get('/item/:id/delete', item_controller.item_delete_get);
 
-// POST request to delete laptop.
-router.post('/laptop/:id/delete', laptop_controller.laptop_delete_post);
+// POST request to delete item.
+router.post('/item/:id/delete', item_controller.item_delete_post);
 
-// GET request to update laptop.
-router.get('/laptop/:id/update', laptop_controller.laptop_update_get);
+// GET request to update item.
+router.get('/item/:id/update', item_controller.item_update_get);
 
-// POST request to update laptop.
-router.post('/laptop/:id/update', laptop_controller.laptop_update_post);
+// POST request to update item.
+router.post('/item/:id/update', item_controller.item_update_post);
 
-// GET request for one laptop.
-router.get('/laptop/:id', laptop_controller.laptop_detail);
+// GET request for one item.
+router.get('/item/:id', item_controller.item_detail);
 
-// GET request for list of all laptop items.
-router.get('/laptops', laptop_controller.laptop_list);
+// GET request for list of all items.
+router.get('/items', item_controller.item_list);
 
 /// manufacturer ROUTES ///
 

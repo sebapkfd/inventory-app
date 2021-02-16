@@ -6,30 +6,30 @@ block content
   form(method='POST' action='')
     div.form-group
       label(for='name') Name:
-      input#name.form-control(type='text', placeholder='Name of laptop' name='name' required='true' value=(undefined === laptop ? '' : laptop.name) )
+      input#name.form-control(type='text', placeholder='Name of item' name='name' required='true' value=(undefined === item ? '' : item.name) )
     div.form-group
       label(for='manufacturer') Manufacturer:
       select#manufacturer.form-control(type='select', placeholder='Select manufacturer' name='manufacturer' required='true' )
         for manufacturer in manufacturers
-          if laptop
-            option(value=manufacturer._id selected=(manufacturer._id.toString()===laptop.manufacturer._id || manufacturer._id.toString() == laptop.manufacturer) ? 'selected' : false) #{manufacturer.name}
+          if item
+            option(value=manufacturer._id selected=(manufacturer._id.toString()===item.manufacturer._id || manufacturer._id.toString() == item.manufacturer) ? 'selected' : false) #{manufacturer.name}
           else
             option(value=manufacturer._id) #{manufacturer.name}
     div.form-group
       label(for='desc') Description:
-      textarea#desc.form-control(type='textarea', placeholder='Add description' name='desc' required='true') #{undefined === laptop ? '' : laptop.desc}
+      textarea#desc.form-control(type='textarea', placeholder='Add description' name='desc' required='true') #{undefined === item ? '' : item.desc}
     div.form-group
       label(for='price') Price:
-      input#price.form-control(type='number', name='price' required='true' min='0' value=(undefined === laptop ? '' : laptop.price) ) 
+      input#price.form-control(type='number', name='price' required='true' min='0' value=(undefined === item ? '' : item.price) ) 
     div.form-group
       label(for='stock') Stock:
-      input#stock.form-control(type='number', name='stock' required='true' min='0' step='1' value=(undefined === laptop ? '' : laptop.stock) )
+      input#stock.form-control(type='number', name='stock' required='true' min='0' step='1' value=(undefined === item ? '' : item.stock) )
     div.form-group
       label(for='category') Category:
       select#category.form-control(type='select', placeholder='Select category' name='category' required='true' )
         for category in categories
-          if laptop
-            option(value=category._id selected=(category._id.toString()===laptop.category._id.toString() ? 'selected' : false) ) #{category.name}
+          if item
+            option(value=category._id selected=(category._id.toString()===item.category._id.toString() ? 'selected' : false) ) #{category.name}
           else
             option(value=category._id) #{category.name}
     button.btn.btn-primary(type='submit') Submit

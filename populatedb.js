@@ -10,7 +10,7 @@ if (!userArgs[0].startsWith('mongodb')) {
 */
 var async = require('async')
 
-var Laptop = require('./models/laptop')
+var Item = require('./models/item')
 var Category = require('./models/category')
 var Manufacturer = require('./models/manufacturer')
 
@@ -23,7 +23,7 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
-var laptops = []
+var items = []
 var categories = []
 var manufacturers = []
 
@@ -57,30 +57,9 @@ function manufacturerCreate(name, description, cb) {
     });
 }
 
-// function laptopCreate(name, manufacturer, category, desc, price, stock, cb) {
-//     laptopdetail = {
-//         name: name,
-//         manufacturers: manufacturer,
-//         categories: category,
-//         desc: desc,
-//         price: price,
-//         stock: stock
-//     }
-//     var laptop = new Laptop(laptopdetail);
-//     laptop.save(function(err) {
-//         if (err) {
-//             cb(err, null)
-//             return
-//         }
-//         console.log('New Laptop' + laptop);
-//         laptops.push(laptop)
-//         cb(null, laptop)
-//     });
-// }
-
-function laptopCreate(name, manufacturer, category, desc, price, stock, cb) {
+function itemCreate(name, manufacturer, category, desc, price, stock, cb) {
     
-    laptopdetail = {
+    itemdetail = {
         name: name,
         manufacturer: manufacturer,
         category: category,
@@ -88,17 +67,16 @@ function laptopCreate(name, manufacturer, category, desc, price, stock, cb) {
         price: price,
         stock: stock
     }
-    // if (category != false) laptopdetail.category = category
       
-    var laptop = new Laptop(laptopdetail);    
-    laptop.save(function (err) {
+    var item = new Item(itemdetail);    
+    item.save(function (err) {
       if (err) {
         cb(err, null)
         return
       }
-      console.log('New laptop: ' + laptop);
-      laptops.push(laptop)
-      cb(null, laptop)
+      console.log('New item: ' + item);
+      items.push(item)
+      cb(null, item)
     }  );
 }
 
@@ -126,41 +104,41 @@ function createManufacturers(cb) {
 }
 
 
-function createLaptops(cb) {
+function createItems(cb) {
     async.parallel([
         function(callback) {
-            laptopCreate('Aspire', manufacturers[1], categories[0], 'TBA', 668, 50, callback);
+            itemCreate('Aspire', manufacturers[1], categories[0], 'TBA', 668, 50, callback);
         },
         function(callback) {
-            laptopCreate('TUF', manufacturers[0], categories[0], 'TBA', 867, 15, callback);
+            itemCreate('TUF', manufacturers[0], categories[0], 'TBA', 867, 15, callback);
         },
         function(callback) {
-            laptopCreate('ROG', manufacturers[0], categories[0], 'TBA', 1499, 10, callback);
+            itemCreate('ROG', manufacturers[0], categories[0], 'TBA', 1499, 10, callback);
         },
         function(callback) {
-            laptopCreate('Predator', manufacturers[1], categories[0], 'TBA', 1629, 10, callback);
+            itemCreate('Predator', manufacturers[1], categories[0], 'TBA', 1629, 10, callback);
         },
         function(callback) {
-            laptopCreate('Nitro', manufacturers[1], categories[0], 'TBA', 999, 16, callback);
+            itemCreate('Nitro', manufacturers[1], categories[0], 'TBA', 999, 16, callback);
         },
         function(callback) {
-            laptopCreate('Vivolaptop', manufacturers[0], categories[0], 'TBA', 639, 11, callback);
+            itemCreate('VivoLaptop', manufacturers[0], categories[0], 'TBA', 639, 11, callback);
         },
         function(callback) {
-            laptopCreate('Zenlaptop', manufacturers[0], categories[0], 'TBA', 1990, 13, callback);
+            itemCreate('ZenLaptop', manufacturers[0], categories[0], 'TBA', 1990, 13, callback);
         }
     ],
     cb);
 }
 
 async.series(
-    [createCategory, createManufacturers, createLaptops],
+    [createCategory, createManufacturers, createItems],
 function(err, result) {
     if (err) {
         console.log('Final error:' + err);
     }
     else {
-        console.log('Laptop instances: ' + laptops);
+        console.log('Item instances: ' + items);
     }
     mongoose.connection.close();
 }

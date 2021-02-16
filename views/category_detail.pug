@@ -6,15 +6,15 @@ block content
 
   div(style='margin-left:20px;margin-top:20px')
 
-    h4 Laptops
+    h4 Items
 
     dl
-      each laptop in category_laptops
+      each item in category_items
         dt
-          a(href=laptop.url) #{laptop.manufacturer.name} #{laptop.name}
+          a(href=item.url) #{item.manufacturer.name} #{item.name}
 
       else
-        p This category has no laptops
+        p This category has no items
   h4 Description
     h6 #{category.description}
   hr

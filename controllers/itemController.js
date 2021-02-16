@@ -1,4 +1,4 @@
-var Laptop = require('../models/laptop');
+var Item = require('../models/item');
 var Manufacturer = require('../models/manufacturer');
 var Category = require('../models/category');
 var async = require('async');
@@ -6,8 +6,8 @@ const { body, validationResult } = require('express-validator');
 
 exports.index = function(req, res) {
     async.parallel({
-        laptop_count: function(callback) {
-            Laptop.countDocuments({}, callback);
+        item_count: function(callback) {
+            Item.countDocuments({}, callback);
         },
         manufacturer_count: function(callback) {
             Manufacturer.countDocuments({}, callback);
@@ -20,30 +20,30 @@ exports.index = function(req, res) {
     })
 };
 
-// Display list of all laptops.
-exports.laptop_list = function(req, res, next) {
-    Laptop.find({}, 'name manufacturer')
+// Display list of all items.
+exports.item_list = function(req, res, next) {
+    Item.find({}, 'name manufacturer')
     .populate('manufacturer')
-    .exec(function (err, list_laptops) {
+    .exec(function (err, list_items) {
         if (err) { 
             return next(err); }
-        res.render('laptop_list', { title: 'Laptop List', laptop_list: list_laptops });
+        res.render('item_list', { title: 'Item List', item_list: list_items });
     })
 };
 
-// Display detail page for a specific laptop.
-exports.laptop_detail = function(req, res, next) {
-    Laptop.findById(req.params.id)
+// Display detail page for a specific item.
+exports.item_detail = function(req, res, next) {
+    Item.findById(req.params.id)
     .populate('manufacturer')
     .populate('category')
     .exec(function(err, result) {
         if (err) { return next(err); }
-        res.render('laptop_detail', { title: `${result.manufacturer.name} ${result.name}`, laptop: result });
+        res.render('item_detail', { title: `${result.manufacturer.name} ${result.name}`, item: result });
     })  
 };
 
-// Display laptop create form on GET.
-exports.laptop_create_get = function(req, res, next) { 
+// Display item create form on GET.
+exports.item_create_get = function(req, res, next) { 
     async.parallel({
         manufacturers: function(callback) {
             Manufacturer.find(callback);
@@ -53,12 +53,12 @@ exports.laptop_create_get = function(req, res, next) {
         }
     }, function(err, results) {
         if (err) { return next(err) }
-        res.render('laptop_form', { title: ' Create Laptop', manufacturers: results.manufacturers, categories: results.categories });
+        res.render('item_form', { title: ' Create Item', manufacturers: results.manufacturers, categories: results.categories });
     });
 };
 
-// Handle laptop create on POST.
-exports.laptop_create_post = [
+// Handle item create on POST.
+exports.item_create_post = [
     body('name', 'Name must not be empty').trim().isLength({ min:1 }).escape(),
     body('manufacturer', 'Manufacturer must not be empty').trim().isLength({ min:1 }).escape(),
     body('category', 'Category must not be empty').trim().isLength({ min:1 }).escape(),
@@ -69,7 +69,7 @@ exports.laptop_create_post = [
     (req, res, next) => {
         const errors = validationResult(req);
 
-        var laptop = new Laptop(
+        var item = new Item(
             {
                 name: req.body.name,
                 manufacturer: req.body.manufacturer,
@@ -89,51 +89,51 @@ exports.laptop_create_post = [
                 }
             }, function(err, results) {
                 if (err) { return next(err) }
-                res.render('laptop_form', { title: 'Create Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: laptop, errors: errors.array() });
+                res.render('item_form', { title: 'Create Item', manufacturers: results.manufacturers, categories: results.categories, item: item, errors: errors.array() });
             })
             return;
         }
         else {
-            laptop.save(function (err) {
+            item.save(function (err) {
                 if (err) { return next(err) }
-                res.redirect(laptop.url);
+                res.redirect(item.url);
             })
         }
     }
 
 ]
 
-// Display laptop delete form on GET.
-exports.laptop_delete_get = function(req, res, next) {
-    Laptop.findById(req.params.id)
+// Display item delete form on GET.
+exports.item_delete_get = function(req, res, next) {
+    Item.findById(req.params.id)
     .populate('manufacturer')
     .exec(function(err, result) {
         if (err) { return next(err) }
-        res.render('laptop_delete', {title: 'Delete Laptop', laptop: result});
+        res.render('item_delete', {title: 'Delete Item', item: result});
     })
 };
 
-// Handle laptop delete on POST.
-exports.laptop_delete_post = function(req, res, next) {
-    Laptop.findById(req.params.id)
+// Handle item delete on POST.
+exports.item_delete_post = function(req, res, next) {
+    Item.findById(req.params.id)
     .populate('manufacturer')
     .populate('category')
     .exec(function(err) {
         if (err) { return next(err) }
         else {
-            Laptop.findByIdAndRemove(req.body.laptopid, function deleteLaptop(err) {
+            Item.findByIdAndRemove(req.body.itemid, function deleteItem(err) {
                 if (err) { return next(err) }
-                res.redirect('/inventory/laptops')
+                res.redirect('/inventory/items')
             })
         }
     })
 };
 
-// Display laptop update form on GET.
-exports.laptop_update_get = function(req, res, next) {
+// Display item update form on GET.
+exports.item_update_get = function(req, res, next) {
     async.parallel({
-        laptop: function(callback) {
-            Laptop.findById(req.params.id)
+        item: function(callback) {
+            Item.findById(req.params.id)
             .populate('manufacturer')
             .populate('category')
             .exec(callback);
@@ -146,17 +146,17 @@ exports.laptop_update_get = function(req, res, next) {
         }
     }, function(err, results) {
         if (err) { return next(err) }
-        if (results.laptop == null) {
-            var err = new Error('Laptop not found');
+        if (results.item == null) {
+            var err = new Error('Item not found');
             err.status = 404;
             return next(err);
         }
-        res.render('laptop_form', { title: 'Update Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: results.laptop });
+        res.render('item_form', { title: 'Update Item', manufacturers: results.manufacturers, categories: results.categories, item: results.item });
     });
 };
 
-// Handle laptop update on POST.
-exports.laptop_update_post = [
+// Handle item update on POST.
+exports.item_update_post = [
     body('name', 'Name must not be empty').trim().isLength({ min:1 }).escape(),
     body('manufacturer', 'Manufacturer must not be empty').trim().isLength({ min:1 }).escape(),
     body('category', 'Category must not be empty').trim().isLength({ min:1 }).escape(),
@@ -167,7 +167,7 @@ exports.laptop_update_post = [
     (req, res, next) => {
         const errors = validationResult(req);
 
-        var laptop = new Laptop(
+        var item = new Item(
             {
                 name: req.body.name,
                 manufacturer: req.body.manufacturer,
@@ -188,14 +188,14 @@ exports.laptop_update_post = [
                 }
             }, function(err, results) {
                 if (err) { return next(err) }
-                res.render('laptop_form', { title: 'Update Laptop', manufacturers: results.manufacturers, categories: results.categories, laptop: laptop, errors: errors.array() });
+                res.render('item_form', { title: 'Update Item', manufacturers: results.manufacturers, categories: results.categories, item: item, errors: errors.array() });
             })
             return;
         }
         else {
-            Laptop.findByIdAndUpdate(req.params.id, laptop, {}, function(err, thelaptop) {
+            Item.findByIdAndUpdate(req.params.id, item, {}, function(err, updatedItem) {
                 if (err) { return next(err) }
-                res.redirect(thelaptop.url)
+                res.redirect(updatedItem.url)
             })
         }
     }

@@ -3,18 +3,18 @@ extends layout
 block content
   h1 #{title}: #{manufacturer.name}
 
-  if manufacturer_laptops.length
+  if manufacturer_items.length
 
-    p #[strong Delete the following laptops before attempting to delete this Manufacturer.]
+    p #[strong Delete the following items before attempting to delete this Manufacturer.]
 
     div(style='margin-left:20px;margin-top:20px')
 
-      h4 Laptops
+      h4 Items
 
       dl
-      each laptop in manufacturer_laptops
+      each item in manufacturer_items
         dt
-          a(href=laptop.url) #{laptop.manufacturer.name} #{laptop.name}
+          a(href=item.url) #{item.manufacturer.name} #{item.name}
 
   else
     p Do you really want to delete this manufacturer?

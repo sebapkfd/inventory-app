@@ -1,5 +1,5 @@
 var Category = require('../models/category');
-var Laptop = require('../models/laptop');
+var Item = require('../models/item');
 var async = require('async');
 const { body, validationResult } = require("express-validator");
 
@@ -23,8 +23,8 @@ exports.category_detail = function(req, res, next) {
             Category.findById(req.params.id)
             .exec(callback)
         },
-        category_laptops: function(callback) {
-            Laptop.find({ 'category': req.params.id })
+        category_items: function(callback) {
+            Item.find({ 'category': req.params.id })
             .populate('manufacturer')
             .exec(callback);
         }
@@ -35,7 +35,7 @@ exports.category_detail = function(req, res, next) {
             err.status = 404;
             return next(err);
         }
-        res.render('category_detail', { title: 'Category Detail', category: results.category, category_laptops: results.category_laptops });
+        res.render('category_detail', { title: 'Category Detail', category: results.category, category_items: results.category_items });
     })
 };
 
@@ -87,8 +87,8 @@ exports.category_delete_get = function(req, res, next) {
             Category.findById(req.params.id)
             .exec(callback);
         },
-        category_laptops: function(callback) {
-            Laptop.find({ 'category': req.params.id})
+        category_items: function(callback) {
+            Item.find({ 'category': req.params.id})
             .populate('manufacturer')
             .populate('category')
             .exec(callback);
@@ -98,7 +98,7 @@ exports.category_delete_get = function(req, res, next) {
         if (results.category == null) {
             res.redirect('/inventory/categories');
         }
-        res.render('category_delete', { title: 'Category Delete', category: results.category, category_laptops: results.category_laptops });
+        res.render('category_delete', { title: 'Delete Category', category: results.category, category_items: results.category_items });
     })
 };
 
@@ -109,16 +109,16 @@ exports.category_delete_post = function(req, res, next) {
             Category.findById(req.params.id)
             .exec(callback);
         },
-        category_laptops: function(callback) {
-            Laptop.find({ 'category': req.params.id})
+        category_items: function(callback) {
+            Item.find({ 'category': req.params.id})
             .populate('manufacturer')
             .populate('category')
             .exec(callback);
         }
     }, function(err, results) {
         if (err) { return next(err) }
-        if (results.category_laptops.length > 0) {
-            res.render('category_delete', { title: 'Category Delete', category: results.category, category_laptops: results.category_laptops });
+        if (results.category_items.length > 0) {
+            res.render('category_delete', { title: 'Delete Category', category: results.category, category_items: results.category_items });
         }
         else { 
             Category.findByIdAndRemove(req.body.categoryid, function deleteCategory(err) {
@@ -146,7 +146,7 @@ exports.category_update_post = [
         const errors = validationResult(req);
 
         if(!errors.isEmpty()) {
-            res.render('category_form', { title: ' Create Category', category: category, errors: errors.array()});
+            res.render('category_form', { title: 'Update Category', category: category, errors: errors.array()});
             return;
         }
         else {
@@ -157,9 +157,9 @@ exports.category_update_post = [
                     _id: req.params.id
                 }
             );
-            Category.findByIdAndUpdate(req.params.id, category, {}, function(err, thecategory) {
+            Category.findByIdAndUpdate(req.params.id, category, {}, function(err, updatedCategory) {
                 if (err) { next(err) }
-                res.redirect(thecategory.url)
+                res.redirect(updatedCategory.url)
             })
         }
     }
