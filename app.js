@@ -8,7 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var inventoryRouter = require('./routes/inventory');
 
-var {key} = require('./info')
+// var {key} = require('./info');
 var app = express();
 
 var mongoose = require('mongoose');
