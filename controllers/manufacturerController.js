@@ -1,36 +1,36 @@
-var Manufacturer = require('../models/manufacturer');
-var Item = require('../models/item');
-var async = require('async');
+const Manufacturer = require('../models/manufacturer');
+const Item = require('../models/item');
+const async = require('async');
 const { body, validationResult} = require('express-validator');
 
 // Display list of all manufacturers.
-exports.manufacturer_list = function(req, res, next) {
+exports.manufacturer_list = (req, res, next) => {
     
     Manufacturer.find()
     .sort('ascending')
-    .exec(function(err, list_manufacturers) {
+    .exec((err, list_manufacturers) => {
         if (err) { return next(err) }
         res.render('manufacturer_list', {title: 'Manufacturer List', manufacturer_list: list_manufacturers });
     });
 };
 
 // Display detail page for a specific manufacturer.
-exports.manufacturer_detail = function(req, res, next) {
+exports.manufacturer_detail = (req, res, next) => {
 
     async.parallel({
-        manufacturer: function(callback) {
+        manufacturer: (callback) => {
             Manufacturer.findById(req.params.id)
             .exec(callback)
         },
-        manufacturer_items: function(callback) {
+        manufacturer_items: (callback) => {
             Item.find({ 'manufacturer': req.params.id})
             .populate('manufacturer')
             .exec(callback);
         }
-    }, function(err, results) {
+    }, (err, results) => {
         if (err) { return next(err) }
         if(results.manufacturer == null) {
-            var err = new Error('Manufacturer not found');
+            const err = new Error('Manufacturer not found');
             err.status = 404;
             return next(err);
         }
@@ -39,7 +39,7 @@ exports.manufacturer_detail = function(req, res, next) {
 };
 
 // Display manufacturer create form on GET.
-exports.manufacturer_create_get = function(req, res, next) {
+exports.manufacturer_create_get = (req, res, next) => {
     res.render('manufacturer_form', { title: ' Create Manufacturer' });
 };
 
@@ -55,13 +55,13 @@ exports.manufacturer_create_post = [
             return;
         }
         else {
-            var manufacturer = new Manufacturer(
+            const manufacturer = new Manufacturer(
                 {
                     name: req.body.name,
                     description: req.body.description
                 }
             );
-            manufacturer.save(function(err) {
+            manufacturer.save((err) => {
                 if (err) { return next(err) }
                 res.redirect(manufacturer.url);
             })
@@ -70,17 +70,17 @@ exports.manufacturer_create_post = [
 ];
 
 // Display manufacturer delete form on GET.
-exports.manufacturer_delete_get = function(req, res, next) {
+exports.manufacturer_delete_get = (req, res, next) => {
     async.parallel({
-        manufacturer: function(callback) {
+        manufacturer: (callback) => {
             Manufacturer.findById(req.params.id).exec(callback);
         },
-        manufacturers_items: function(callback) {
+        manufacturers_items: (callback) => {
             Item.find({ 'manufacturer' : req.params.id})
             .populate('manufacturer')
             .exec(callback);
         }
-    }, function(err, results) {
+    }, (err, results) => {
         if (err) { return next(err) }
         if (results.manufacturer == null) {
             res.redirect('/inventory/manufacturers');
@@ -90,24 +90,24 @@ exports.manufacturer_delete_get = function(req, res, next) {
 };
 
 // Handle manufacturer delete on POST.
-exports.manufacturer_delete_post = function(req, res, next) {
+exports.manufacturer_delete_post = (req, res, next) => {
     async.parallel({ 
-        manufacturer: function(callback) {
+        manufacturer: (callback) => {
             Manufacturer.findById(req.body.manufacturerid).exec(callback)
         },
-        manufacturers_items: function(callback) {
+        manufacturers_items: (callback) => {
             Item.find({ 'manufacturer' : req.body.manufacturerid})
             .populate('manufacturer')
             .exec(callback)
         }
-    }, function(err, results) { 
+    }, (err, results) => {  
         if (err) { return next(err) }
         if (results.manufacturers_items.length > 0) {
             res.render('manufacturer_delete', { title: 'Delete Manufacturer', manufacturer: results.manufacturer, manufacturer_items: results.manufacturers_items });
             return;
         }
         else {
-            Manufacturer.findByIdAndRemove(req.body.manufacturerid, function deleteManufacturer(err) {
+            Manufacturer.findByIdAndRemove(req.body.manufacturerid,  function deleteManufacturer(err) {
                 if (err) { return next(err) }
                 res.redirect('/inventory/manufacturers')
             })
@@ -116,9 +116,9 @@ exports.manufacturer_delete_post = function(req, res, next) {
 };
 
 // Display manufacturer update form on GET.
-exports.manufacturer_update_get = function(req, res, next) {
+exports.manufacturer_update_get = (req, res, next) => {
     Manufacturer.findById(req.params.id)
-    .exec(function(err, result) {
+    .exec((err, result) => {
         if (err) { return next(err) }
         res.render('manufacturer_form', { title: 'Update Manufacturer', manufacturer: result });
     })
@@ -137,14 +137,14 @@ exports.manufacturer_update_post = [
             return;
         }
         else {
-            var manufacturer = new Manufacturer(
+            const manufacturer = new Manufacturer(
                 {
                     name: req.body.name,
                     description: req.body.description,
                     _id: req.params.id
                 }
             );
-            Manufacturer.findByIdAndUpdate(req.params.id, manufacturer, {}, function(err, updatedManufacturer) {
+            Manufacturer.findByIdAndUpdate(req.params.id, manufacturer, {}, (err, updatedManufacturer) => {
                 if (err) { return next(err) }
                 res.redirect(updatedManufacturer.url)
             })

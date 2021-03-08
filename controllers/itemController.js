@@ -1,30 +1,30 @@
-var Item = require('../models/item');
-var Manufacturer = require('../models/manufacturer');
-var Category = require('../models/category');
-var async = require('async');
+const Item = require('../models/item');
+const Manufacturer = require('../models/manufacturer');
+const Category = require('../models/category');
+const async = require('async');
 const { body, validationResult } = require('express-validator');
 
-exports.index = function(req, res) {
+exports.index = (req, res) => {
     async.parallel({
-        item_count: function(callback) {
+        item_count: (callback) => {
             Item.countDocuments({}, callback);
         },
-        manufacturer_count: function(callback) {
+        manufacturer_count: (callback) => {
             Manufacturer.countDocuments({}, callback);
         },
-        category_count: function(callback) {
+        category_count: (callback) => {
             Category.countDocuments({}, callback);
         }
-    }, function(err, results) {
+    }, (err, results) => {
         res.render('index', { title: 'Inventory Home', error: err, data: results});
     })
 };
 
 // Display list of all items.
-exports.item_list = function(req, res, next) {
+exports.item_list = (req, res, next) => {
     Item.find({}, 'name manufacturer')
     .populate('manufacturer')
-    .exec(function (err, list_items) {
+    .exec( (err, list_items) => {
         if (err) { 
             return next(err); }
         res.render('item_list', { title: 'Item List', item_list: list_items });
@@ -32,26 +32,26 @@ exports.item_list = function(req, res, next) {
 };
 
 // Display detail page for a specific item.
-exports.item_detail = function(req, res, next) {
+exports.item_detail = (req, res, next) => {
     Item.findById(req.params.id)
     .populate('manufacturer')
     .populate('category')
-    .exec(function(err, result) {
+    .exec((err, result) => {
         if (err) { return next(err); }
         res.render('item_detail', { title: `${result.manufacturer.name} ${result.name}`, item: result });
     })  
 };
 
 // Display item create form on GET.
-exports.item_create_get = function(req, res, next) { 
+exports.item_create_get = (req, res, next) => {
     async.parallel({
-        manufacturers: function(callback) {
+        manufacturers: (callback) => {
             Manufacturer.find(callback);
         },
-        categories: function(callback) {
+        categories: (callback) => {
             Category.find(callback);
         }
-    }, function(err, results) {
+    }, (err, results) => {
         if (err) { return next(err) }
         res.render('item_form', { title: ' Create Item', manufacturers: results.manufacturers, categories: results.categories });
     });
@@ -69,7 +69,7 @@ exports.item_create_post = [
     (req, res, next) => {
         const errors = validationResult(req);
 
-        var item = new Item(
+        const item = new Item(
             {
                 name: req.body.name,
                 manufacturer: req.body.manufacturer,
@@ -81,20 +81,20 @@ exports.item_create_post = [
         );
         if (!errors.isEmpty()) {
             async.parallel({
-                manufacturers: function(callback) {
+                manufacturers: (callback) => {
                     Manufacturer.find(callback);
                 },
-                categories: function(callback) {
+                categories: (callback) => {
                     Category.find(callback);
                 }
-            }, function(err, results) {
+            }, (err, results) => {
                 if (err) { return next(err) }
                 res.render('item_form', { title: 'Create Item', manufacturers: results.manufacturers, categories: results.categories, item: item, errors: errors.array() });
             })
             return;
         }
         else {
-            item.save(function (err) {
+            item.save( (err) => {
                 if (err) { return next(err) }
                 res.redirect(item.url);
             })
@@ -104,24 +104,24 @@ exports.item_create_post = [
 ]
 
 // Display item delete form on GET.
-exports.item_delete_get = function(req, res, next) {
+exports.item_delete_get = (req, res, next) => {
     Item.findById(req.params.id)
     .populate('manufacturer')
-    .exec(function(err, result) {
+    .exec((err, result) => {
         if (err) { return next(err) }
         res.render('item_delete', {title: 'Delete Item', item: result});
     })
 };
 
 // Handle item delete on POST.
-exports.item_delete_post = function(req, res, next) {
+exports.item_delete_post = (req, res, next) => {
     Item.findById(req.params.id)
     .populate('manufacturer')
     .populate('category')
-    .exec(function(err) {
+    .exec((err) => {
         if (err) { return next(err) }
         else {
-            Item.findByIdAndRemove(req.body.itemid, function deleteItem(err) {
+            Item.findByIdAndRemove(req.body.itemid,  function deleteItem(err) {
                 if (err) { return next(err) }
                 res.redirect('/inventory/items')
             })
@@ -130,24 +130,24 @@ exports.item_delete_post = function(req, res, next) {
 };
 
 // Display item update form on GET.
-exports.item_update_get = function(req, res, next) {
+exports.item_update_get = (req, res, next) => {
     async.parallel({
-        item: function(callback) {
+        item: (callback) => {
             Item.findById(req.params.id)
             .populate('manufacturer')
             .populate('category')
             .exec(callback);
         },
-        manufacturers: function(callback) {
+        manufacturers: (callback) => {
             Manufacturer.find(callback);
         },
-        categories : function(callback) {
+        categories : (callback) => {
             Category.find(callback);
         }
-    }, function(err, results) {
+    }, (err, results) => {
         if (err) { return next(err) }
         if (results.item == null) {
-            var err = new Error('Item not found');
+            const err = new Error('Item not found');
             err.status = 404;
             return next(err);
         }
@@ -167,7 +167,7 @@ exports.item_update_post = [
     (req, res, next) => {
         const errors = validationResult(req);
 
-        var item = new Item(
+        const item = new Item(
             {
                 name: req.body.name,
                 manufacturer: req.body.manufacturer,
@@ -180,20 +180,20 @@ exports.item_update_post = [
         );
         if (!errors.isEmpty()) {
             async.parallel({
-                manufacturers: function(callback) {
+                manufacturers: (callback) => {
                     Manufacturer.find(callback);
                 },
-                categories: function(callback) {
+                categories: (callback) => {
                     Category.find(callback);
                 }
-            }, function(err, results) {
+            }, (err, results) => {
                 if (err) { return next(err) }
                 res.render('item_form', { title: 'Update Item', manufacturers: results.manufacturers, categories: results.categories, item: item, errors: errors.array() });
             })
             return;
         }
         else {
-            Item.findByIdAndUpdate(req.params.id, item, {}, function(err, updatedItem) {
+            Item.findByIdAndUpdate(req.params.id, item, {}, (err, updatedItem) => {
                 if (err) { return next(err) }
                 res.redirect(updatedItem.url)
             })
