@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var item_controller = require('../controllers/itemController');
-var category_controller = require('../controllers/categoryController');
-var manufacturer_controller = require('../controllers/manufacturerController');
+const item_controller = require('../controllers/itemController');
+const category_controller = require('../controllers/categoryController');
+const manufacturer_controller = require('../controllers/manufacturerController');
 
 /// item ROUTES ///
 
